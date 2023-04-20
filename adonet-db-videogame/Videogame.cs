@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace adonet_db_videogame
 {
-    internal class Videogame
+    public class Videogame
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -21,6 +21,13 @@ namespace adonet_db_videogame
             Overview = overview;
             ReleaseDate = releaseDate;
             SoftwareHouseId = softwareHouseId;
+        }
+
+        public void Stampa()
+        {
+            Console.WriteLine($"Nome videogioco : {Name}");
+            Console.WriteLine($"Riassunto videogioco : {Overview}");
+            Console.WriteLine($"Data di rilascio videogioco : {ReleaseDate.ToString("dd/MM/yyyy")}");
         }
     }
 }

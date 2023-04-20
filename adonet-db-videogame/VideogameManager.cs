@@ -7,33 +7,27 @@ using System.Threading.Tasks;
 
 namespace adonet_db_videogame
 {
-    internal class VideogameManager
+    public class VideogameManager
     {
-        private string connStr;
-
-        public VideogameManager(string connStr)
-        {
-            this.connStr = "Data Source=localhost;Initial Catalog=db-videogames; Integrated Security=True";
-        }
 
         //metodo per aggiungere un videogioco al db
         public void AddGame(Videogame videogame)
         {
+            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
                     conn.Open();
 
-                    var query = "INSERT INTO videogames (name, overview, release_date, software_house_id" +
-                        "VALUES ('@Name', '@Description', '@ReleaseDate', '@SoftawareHouseId')";
+                    var query = "INSERT INTO videogames(name,overview,release_date,software_house_id) VALUES (@Name,@Overview,@ReleaseDate,@SoftwareHouseId) ";
 
                     var cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@Name", videogame.Name);
-                    cmd.Parameters.AddWithValue("@Description", videogame.Overview);
+                    cmd.Parameters.AddWithValue("@Overview", videogame.Overview);
                     cmd.Parameters.AddWithValue("@ReleaseDate", videogame.ReleaseDate);
                     cmd.Parameters.AddWithValue("@SoftwareHouseId", videogame.SoftwareHouseId);
-                    cmd.ExecuteNonQuery();
+                    int res = cmd.ExecuteNonQuery();
 
                 }
                 catch (Exception ex)
@@ -46,13 +40,14 @@ namespace adonet_db_videogame
         //metodo per ricerca un videgioco tramite id
         public Videogame? SearchById(long id)
         {
+            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
                     conn.Open();
 
-                    var query = "SELECT id, name, overview, release_date, software_house_id FROM videogames WHERE id = @id";
+                    var query = "SELECT * FROM videogames  WHERE videogames.id=@Id";
                     var cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@Id", id);
 
@@ -60,14 +55,13 @@ namespace adonet_db_videogame
 
                     while(reader.Read())
                     {
-                        var name = reader.GetString(1);
+                        var name = reader.GetString(0);
                         var overview = reader.GetString(2);
                         var releaseDate = reader.GetDateTime(3);
                         var softwareHouseId = reader.GetInt64(4);
 
                         Videogame videogame = new Videogame(id, name, overview, releaseDate, softwareHouseId);
                         Console.WriteLine($"ID: {reader.GetInt64(0)}\nNome: {reader.GetString(1)}\nDescrizione: {reader.GetString(3)}\nData di Rilascio: {reader.GetDateTime(4)}");
-                        return videogame;
                     }
                     Console.WriteLine("Nessun risultato trovato\n");
                     return null;
@@ -83,6 +77,7 @@ namespace adonet_db_videogame
         //metodo di ricerca tramite il nome
         public Videogame? SearchByName(string Name)
         {
+            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
@@ -120,7 +115,8 @@ namespace adonet_db_videogame
         //metodo per eliminare il videogioco
         public bool DeleteGame(long id)
         {
-            using(SqlConnection conn = new SqlConnection())
+            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
+            using (SqlConnection conn = new SqlConnection())
             {
                 try
                 {
