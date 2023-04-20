@@ -55,7 +55,7 @@ namespace adonet_db_videogame
 
                     while(reader.Read())
                     {
-                        var name = reader.GetString(0);
+                        var name = reader.GetString(0ùù);
                         var overview = reader.GetString(2);
                         var releaseDate = reader.GetDateTime(3);
                         var softwareHouseId = reader.GetInt64(4);
