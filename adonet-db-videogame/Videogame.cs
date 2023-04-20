@@ -10,17 +10,17 @@ namespace adonet_db_videogame
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string Overview { get; set; }
         public DateTime ReleaseDate { get; set; }
         public long SoftwareHouseId { get; set; }
 
-        public Videogame(long _id, string _name, string _description, DateTime _releaseDate, long _sfotwareHouseId) 
+        public Videogame(long id, string name, string overview, DateTime releaseDate, long softwareHouseId) 
         {
-            Id = _id;
-            Name = _name;
-            Description = _description;
-            ReleaseDate = _releaseDate;
-            SoftwareHouseId = _sfotwareHouseId;
+            Id = id;
+            Name = name;
+            Overview = overview;
+            ReleaseDate = releaseDate;
+            SoftwareHouseId = softwareHouseId;
         }
     }
 }
