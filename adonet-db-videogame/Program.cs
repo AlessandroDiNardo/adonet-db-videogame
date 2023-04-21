@@ -2,70 +2,80 @@
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var gameManager = new VideogameManager();
-
-            //Chiedo all'utente cosa vuole fare
-            Console.WriteLine("1. Inserisci un nuovo videogioco");
-            Console.WriteLine("2. Ricerca videogioco per ID");
-            Console.WriteLine("3. Ricerca tutti i videogiochi");
-            Console.WriteLine("4. Cancella un videogioco");
-            Console.WriteLine("5. Chiudere il programma");
-
-            //Controllo che l'input inserito sia un numero intero
-            int choice;
-            while (!int.TryParse(Console.ReadLine(), out choice))
+            Console.WriteLine("Prego scegli una delle seguenti opzione premendo il corrispondente tasto sulla tastiera.");
+            while (true)
             {
-                Console.WriteLine("Scelta non valida. Riprova.");
-                continue;
-            }
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("1. Inserisci nuovo videogioco");
+                Console.WriteLine("2. Ricerca per ID");
+                Console.WriteLine("3. Ricerca per nome");
+                Console.WriteLine("4. Elimina videogioco");
+                Console.WriteLine("5. Chiudi app");
 
-            switch(choice)
-            {
-                case 1:
-                    Console.Write("Nome: ");
-                    var name = Console.ReadLine();
+                var opzione = Console.ReadKey();
 
-                    Console.Write("Descrizione: ");
-                    var overview = Console.ReadLine();
+                Console.WriteLine(Environment.NewLine);
 
-                    Console.Write("Data di Rilascio (dd/MM/yyyy): ");
-                    var releaseDate = DateTime.Parse(Console.ReadLine());
 
-                    Console.Write("Software house id: ");
-                    var softwareHouseId = Convert.ToInt64(Console.ReadLine());
+                switch (opzione.Key)
+                {
+                    case ConsoleKey.D1:
+                        Console.WriteLine("Nome:");
+                        var name = Console.ReadLine();
 
-                    var game = new Videogame(0, name, overview, releaseDate, softwareHouseId);
-                    gameManager.AddGame(game);
+                        Console.WriteLine("Descrizione:");
+                        var overview = Console.ReadLine();
 
-                    break;
+                        Console.WriteLine("Data di rilascio (dd/mm/yyyy):");
+                        DateTime releaseDate;
+                        while (!DateTime.TryParse(Console.ReadLine(), out releaseDate))
+                            Console.WriteLine("Inserisci formato Valido! (dd/mm/yyyy)");
 
-                case 2:
-                    Console.Write("Inserisci id gioco:");
-                    var id = Convert.ToInt64(Console.ReadLine());
-                    gameManager.SearchById(id);
-                    break;
+                        Console.WriteLine("Software house id:");
+                        var softwareHouseId = Convert.ToInt64(Console.ReadLine());
 
-                case 3:
-                    Console.Write("Inserisci il nome di un gioco: ");
-                    var gameName = Console.ReadLine();
-                    gameManager.SearchByName(gameName);
-                    break;
+                        var game = new Videogame(name, overview, releaseDate, softwareHouseId);
 
-                case 4:
-                    Console.Write("Inserisci id gioco da eliminare: ");
-                    var deleteId = Convert.ToInt64(Console.ReadLine()); 
-                    gameManager.DeleteGame(deleteId);
-                    break;
+                        VideogameManager.AddGame(game);
 
-                case 5:
-                    Environment.Exit(0);
-                    break;
 
-                default:
-                    Console.WriteLine("Scelta non valida,ù riprova!");
-                    break;
+                        break;
+                    case ConsoleKey.D2:
+                        Console.WriteLine("Inserisci id gioco");
+
+                        var id = Convert.ToInt64(Console.ReadLine());
+
+                        Console.WriteLine(VideogameManager.SearchById(id).ToString());
+
+                        break;
+                    case ConsoleKey.D3:
+                        Console.WriteLine("Inserisci nome gioco");
+
+                        var Name = Console.ReadLine();
+
+                        Console.WriteLine(VideogameManager.ListToString(VideogameManager.SearchByName(Name)));
+
+                        break;
+                    case ConsoleKey.D4:
+                        Console.WriteLine("Inserisci id gioco da eliminare");
+
+                        var _id = Convert.ToInt64(Console.ReadLine());
+
+                        VideogameManager.DeleteGame(_id);
+
+                        break;
+                    case ConsoleKey.D5:
+                        Environment.Exit(0);
+
+                        break;
+                    default:
+                        Console.WriteLine("Premi un numero da 1 a 5!");
+
+                        break;
+                }
+
             }
 
         }

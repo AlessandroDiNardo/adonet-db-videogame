@@ -8,26 +8,60 @@ namespace adonet_db_videogame
 {
     public class Videogame
     {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public string Overview { get; set; }
+        private string _name;
+        public string Name 
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException(null, "Il campo \"Nome\" non può essere vuoto!");
+                }
+                else
+                {
+                    _name = value;
+                }
+            }
+        }
+
+        private string _overview;
+        public string Overview 
+        { 
+            get
+            {
+                return _overview;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException(null, "Il campo \"Descrizione\" non può essere vuoto!");
+                }
+                else
+                {
+                    _overview = value;
+                }
+            }
+        }
         public DateTime ReleaseDate { get; set; }
         public long SoftwareHouseId { get; set; }
 
-        public Videogame(long id, string name, string overview, DateTime releaseDate, long softwareHouseId) 
+        public Videogame(string name, string overview, DateTime release_date, long software_house_id) 
         {
-            Id = id;
             Name = name;
             Overview = overview;
-            ReleaseDate = releaseDate;
-            SoftwareHouseId = softwareHouseId;
+            ReleaseDate = release_date;
+            SoftwareHouseId = software_house_id;
         }
 
-        public void Stampa()
+
+        public override string ToString()
         {
-            Console.WriteLine($"Nome videogioco : {Name}");
-            Console.WriteLine($"Riassunto videogioco : {Overview}");
-            Console.WriteLine($"Data di rilascio videogioco : {ReleaseDate.ToString("dd/MM/yyyy")}");
+            return $"Nome: {Name}\nDescrizione: {Overview}\nData di rilascio: {ReleaseDate.ToString()}";
         }
     }
 }

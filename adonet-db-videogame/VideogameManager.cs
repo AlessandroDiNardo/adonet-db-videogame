@@ -4,24 +4,20 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace adonet_db_videogame
 {
-    public class VideogameManager
+    public static class VideogameManager
     {
+        public static string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
 
-        //metodo per aggiungere un videogioco al db
-        public void AddGame(Videogame videogame)
+        public static void AddGame(Videogame videogame)
         {
-            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
                     conn.Open();
-
-                    var query = "INSERT INTO videogames(name,overview,release_date,software_house_id) VALUES (@Name,@Overview,@ReleaseDate,@SoftwareHouseId) ";
-
+                    var query = "INSERT INTO videogames (name, overview, release_date, software_house_id) VALUES ('@Name', '@Overview', '@ReleaseDate', '@SoftwareHouseId')";
                     var cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@Name", videogame.Name);
                     cmd.Parameters.AddWithValue("@Overview", videogame.Overview);
@@ -29,6 +25,7 @@ namespace adonet_db_videogame
                     cmd.Parameters.AddWithValue("@SoftwareHouseId", videogame.SoftwareHouseId);
                     int res = cmd.ExecuteNonQuery();
 
+                    Console.WriteLine("Videogioco inserito");
                 }
                 catch (Exception ex)
                 {
@@ -37,47 +34,42 @@ namespace adonet_db_videogame
             }
         }
 
-        //metodo per ricerca un videgioco tramite id
-        public Videogame? SearchById(long id)
+        public static Videogame SearchById(long id)
         {
-            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
                     conn.Open();
-
-                    var query = "SELECT * FROM videogames  WHERE videogames.id=@Id";
+                    var query = "SELECT id, name, overview, release_date, software_house_id FROM videogames WHERE id = @Id";
                     var cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@Id", id);
 
                     using SqlDataReader reader = cmd.ExecuteReader();
 
-                    while(reader.Read())
+                    while (reader.Read())
                     {
-                        var name = reader.GetString(0ùù);
+                        var name = reader.GetString(1);
                         var overview = reader.GetString(2);
                         var releaseDate = reader.GetDateTime(3);
                         var softwareHouseId = reader.GetInt64(4);
 
-                        Videogame videogame = new Videogame(id, name, overview, releaseDate, softwareHouseId);
-                        Console.WriteLine($"ID: {reader.GetInt64(0)}\nNome: {reader.GetString(1)}\nDescrizione: {reader.GetString(3)}\nData di Rilascio: {reader.GetDateTime(4)}");
+                        Videogame videogame = new Videogame(name, overview, releaseDate, softwareHouseId);
+                        return videogame;
                     }
-                    Console.WriteLine("Nessun risultato trovato\n");
                     return null;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString);
+                    Console.WriteLine(ex.ToString());
                     return null;
                 }
             }
         }
 
-        //metodo di ricerca tramite il nome
-        public Videogame? SearchByName(string Name)
+        public static List<Videogame> SearchByName(string Name)
         {
-            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
+            List<Videogame> videogamesList = new List<Videogame>();
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
@@ -89,34 +81,30 @@ namespace adonet_db_videogame
 
                     using SqlDataReader reader = cmd.ExecuteReader();
 
-                    while(reader.Read())
+                    while (reader.Read())
                     {
-                        var id = reader.GetInt64(0);
                         var name = reader.GetString(1);
                         var overview = reader.GetString(2);
                         var releaseDate = reader.GetDateTime(3);
                         var softwareHouseId = reader.GetInt64(4);
 
-                        Videogame videogame = new Videogame(id, name, overview , releaseDate, softwareHouseId);
-                        Console.WriteLine($"ID: {reader.GetInt64(0)}\nNome: {reader.GetString(1)}\nDescrizione: {reader.GetString(3)}\nData di Rilascio: {reader.GetDateTime(4)}");
-                        return videogame;
+                        Videogame videogame = new Videogame(name, overview, releaseDate, softwareHouseId);
+
+                        videogamesList.Add(videogame);
                     }
-                    Console.WriteLine("Nessun risultato trovato!");
-                    return null;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
-                    return null;
                 }
             }
+            return videogamesList;
         }
 
-        //metodo per eliminare il videogioco
-        public bool DeleteGame(long id)
+
+        public static bool DeleteGame(long id)
         {
-            string connStr = "Data Source=localhost;Initial Catalog=db-videogames;Integrated Security=True";
-            using (SqlConnection conn = new SqlConnection())
+            using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
@@ -124,7 +112,7 @@ namespace adonet_db_videogame
                     var query = "DELETE FROM videogames WHERE id = @Id";
                     var cmd = new SqlCommand(query, conn);
 
-                    cmd.Parameters.AddWithValue ("@Id", id); 
+                    cmd.Parameters.AddWithValue("@Id", id);
 
                     cmd.ExecuteNonQuery();
 
@@ -132,10 +120,28 @@ namespace adonet_db_videogame
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString);
+                    Console.WriteLine(ex.ToString());
                     return false;
                 }
             }
+        }
+
+        public static string ListToString(List<Videogame> videogamesList)
+        {
+            if (videogamesList.Count == 0)
+                return "Non ci sono videogiochi corrispondenti!";
+
+            string risultato = string.Empty;
+
+            int index = 1;
+
+            foreach (Videogame videogame in videogamesList)
+            {
+                risultato += $"\r\n\t{videogame.ToString()}";
+                index++;
+            }
+
+            return risultato;
         }
     }
 }
